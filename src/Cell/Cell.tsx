@@ -113,7 +113,9 @@ function Cell({ value = '', comments = [] }: Props) {
                 <BsThreeDotsVertical className="cursor-pointer" />
               </button>
               <div
-                className={`absolute top-0 left-7 ${optionsVisible ? 'flex flex-col' : 'hidden'}`}
+                className={`absolute top-0 left-7 z-50 ${
+                  optionsVisible ? 'flex flex-col' : 'hidden'
+                }`}
               >
                 <CellOptions selectOption={selectOption} />
               </div>

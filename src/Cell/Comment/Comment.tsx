@@ -11,19 +11,21 @@ function CommentComponent({ comment }: Props) {
   useEffect(() => {
     const interval = setInterval(() => {
       const seconds = (new Date().getTime() - comment.createdAt.getTime()) / 1000;
+      const minutes = Math.round(seconds / 60);
+      const hours = Math.round(seconds / 3600);
       if (seconds < 60) {
         setHowLong('Less than a minute');
       } else if (seconds < 3600) {
-        setHowLong(`${Math.round(seconds / 60)} minutes ago`);
+        setHowLong(`${minutes} minutes ago`);
       } else {
-        setHowLong(`${Math.round(seconds / 3600)} hours ago`);
+        setHowLong(`${hours} ${hours <= 1 ? 'hour' : 'hours'} ago`);
       }
     }, 60000);
     return () => clearInterval(interval);
   });
 
   return (
-    <div className="bg-yellow-100 p-2">
+    <div className=" bg-teal-100 p-2">
       <div className="flex items-center">
         <div>{comment.author}</div>
         <div className="ml-4 text-sm opacity-70">{howLong}</div>
