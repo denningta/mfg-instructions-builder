@@ -1,64 +1,108 @@
-import { useState } from 'react';
+/* eslint-disable operator-linebreak */
+/* eslint-disable react/require-default-props */
+import { useEffect, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import './Cell.css';
 import { BsThreeDotsVertical, BsChevronRight } from 'react-icons/bs';
-import CellOptions from './CellOptions/CellOptions';
+import { BiCommentDetail } from 'react-icons/bi';
+import CellOptions, { MenuItem } from './CellOptions/CellOptions';
+import CommentComponent from './Comment/Comment';
 
-interface CellValue {
-  value?: string | undefined;
+export interface CellComment {
+  id: string;
+  author: string;
+  message: string;
+  createdAt: Date;
+  resolved: boolean;
 }
 
-interface EditorState {
-  visible: boolean;
+interface Props {
+  value?: string;
+  comments?: CellComment[];
 }
+function Cell({ value = '', comments = [] }: Props) {
+  const [cellValue, setCellValue] = useState<string>(value || '# Hello World');
+  const [editorVisible, setEditorVisibility] = useState<boolean>(false);
+  const [barVisible, setBarVisibility] = useState<boolean>(false);
+  const [optionsVisible, setOptionsVisibility] = useState<boolean>(false);
+  const [commentsVisible, setCommentsVisibility] = useState<boolean>(false);
+  const [commentNotificationVisible, setCommentNotificationVisibility] = useState<boolean>(
+    !!comments.length,
+  );
+  const [cellComments, setCellCommentsState] = useState<CellComment[]>(comments);
 
-interface BarState {
-  visible: boolean;
-}
+  useEffect(() => {
+    setCommentNotificationVisibility(!!cellComments.length);
+  }, [cellComments]);
 
-interface OptionsState {
-  visible: boolean;
-}
-
-function Cell() {
-  const [value, setValue] = useState<CellValue>({ value: '# Hello World!' });
-  const [editorState, setEditorState] = useState<EditorState>({ visible: false });
-  const [barState, setBarState] = useState<BarState>({ visible: false });
-  const [optionsState, setOptionsState] = useState<OptionsState>({ visible: false });
-
-  const handleChange = (event: any) => {
-    setValue({ value: event.target.value });
-  };
+  const handleChange = (event: any) => setCellValue(event.target.value);
 
   const handleHover = (event: any) => {
     event.preventDefault();
-    if (optionsState.visible) return;
-    setBarState({ visible: event.type !== 'mouseleave' });
+    if (optionsVisible) return;
+    setBarVisibility(event.type !== 'mouseleave');
   };
 
   const toggleEditor = (event: any) => {
     event.preventDefault();
-    setEditorState({ visible: !editorState.visible });
+    setEditorVisibility(!editorVisible);
   };
 
   const toggleOptions = (event: any) => {
     event.preventDefault();
-    setOptionsState({ visible: !optionsState.visible });
+    setOptionsVisibility(!optionsVisible);
+  };
+
+  const toggleComments = (event: any) => {
+    event.preventDefault();
+    setCommentsVisibility(!commentsVisible);
+  };
+
+  const selectOption = (menuItem: MenuItem) => {
+    const newComment: CellComment = {
+      id: '123',
+      author: 'Anonymous',
+      message: 'test message',
+      createdAt: new Date(),
+      resolved: false,
+    };
+    switch (menuItem.action) {
+      case 'edit':
+        setEditorVisibility(true);
+        break;
+      case 'addcomment':
+        setCommentsVisibility(true);
+        setCellCommentsState([...cellComments, newComment]);
+        break;
+      default:
+        break;
+    }
+    setOptionsVisibility(false);
   };
 
   return (
     <div className="" onMouseEnter={handleHover} onMouseLeave={handleHover}>
-      {value.value && (
+      {cellValue && (
         <div className="flex w-full mb-2">
+          <button
+            type="button"
+            className={`h-fit my-2 mx-2 ${commentNotificationVisible ? 'visible' : 'invisible'}`}
+            onClick={toggleComments}
+          >
+            <div className="flex items-center">
+              <span className="mr-1">{cellComments.length}</span>
+              <BiCommentDetail />
+            </div>
+          </button>
           <div
             className={`flex items-start transition ease-in-out ${
-              barState.visible ? 'opacity-100' : 'opacity-0'
+              barVisible ? 'opacity-100' : 'opacity-0'
             }`}
           >
             <button
               type="button"
               className={`m-2 cursor-pointer transition ease-in-out ${
-                editorState.visible ? 'rotate-90' : ''
+                editorVisible ? 'rotate-90' : ''
               }`}
               onClick={toggleEditor}
             >
@@ -69,28 +113,31 @@ function Cell() {
                 <BsThreeDotsVertical className="cursor-pointer" />
               </button>
               <div
-                className={`absolute top-0 left-7 ${
-                  optionsState.visible ? 'flex flex-col' : 'hidden'
-                }`}
+                className={`absolute top-0 left-7 ${optionsVisible ? 'flex flex-col' : 'hidden'}`}
               >
-                <CellOptions />
+                <CellOptions selectOption={selectOption} />
               </div>
             </div>
           </div>
           <div className="grow">
             <div className="p-3">
-              <ReactMarkdown>{value.value}</ReactMarkdown>
+              <ReactMarkdown>{cellValue}</ReactMarkdown>
             </div>
             <div
-              className={`overflow-clip transition ease-in-out h-0 ${
-                editorState.visible ? 'h-fit' : 'h-0'
+              className={`overflow-clip transition ease-in-out ${
+                editorVisible ? 'block' : 'hidden'
               }`}
             >
               <textarea
                 className="w-full p-3 bg-sky-100 min-h-fit outline-none -mb-[6px]"
-                value={value.value}
+                value={cellValue}
                 onChange={handleChange}
               />
+            </div>
+            <div className={`pt-3 ${commentsVisible ? 'flex flex-col' : 'hidden'}`}>
+              {cellComments.map((comment) => (
+                <CommentComponent key={comment.id} comment={comment} />
+              ))}
             </div>
           </div>
         </div>

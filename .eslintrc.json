@@ -31,7 +31,6 @@
         "react/react-in-jsx-scope": "off",
         "react/jsx-filename-extension": [2, { "extensions": [".js", ".jsx", ".ts", ".tsx"] }],
         "quotes": "off",
-        "next-line": "off",
         "prettier/prettier": ["error", {"singleQuote": true}],
         "@typescript-eslint/quotes": [
             "error",
@@ -50,6 +49,7 @@
               "ts": "never",
               "tsx": "never"
             }
-         ]
-    }
+         ],
+         "operator-linebreak": "off"
+     }
 }
