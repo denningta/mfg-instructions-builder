@@ -1,12 +1,15 @@
 /* eslint-disable operator-linebreak */
 /* eslint-disable react/require-default-props */
+import './Cell.css';
 import { useEffect, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
-import './Cell.css';
 import { BsThreeDotsVertical, BsChevronRight } from 'react-icons/bs';
 import { BiCommentDetail } from 'react-icons/bi';
+
+// Components
 import CellOptions, { MenuItem } from './CellOptions/CellOptions';
 import CommentComponent from './Comment/Comment';
+import CellEditor from './CellEditor/CellEditor';
 
 export interface CellComment {
   id: string;
@@ -20,8 +23,9 @@ interface Props {
   value?: string;
   comments?: CellComment[];
 }
+
 function Cell({ value = '', comments = [] }: Props) {
-  const [cellValue, setCellValue] = useState<string>(value || '# Hello World');
+  const [cellValue] = useState<string>(value || '# Hello World');
   const [editorVisible, setEditorVisibility] = useState<boolean>(false);
   const [barVisible, setBarVisibility] = useState<boolean>(false);
   const [optionsVisible, setOptionsVisibility] = useState<boolean>(false);
@@ -33,19 +37,19 @@ function Cell({ value = '', comments = [] }: Props) {
 
   useEffect(() => {
     setCommentNotificationVisibility(!!cellComments.length);
-  }, [cellComments]);
-
-  const handleChange = (event: any) => setCellValue(event.target.value);
+    if (editorVisible) {
+      setBarVisibility(true);
+    }
+  }, [cellComments, editorVisible]);
 
   const handleHover = (event: any) => {
     event.preventDefault();
-    if (optionsVisible) return;
+    if (optionsVisible || editorVisible) return;
     setBarVisibility(event.type !== 'mouseleave');
   };
 
-  const toggleEditor = (event: any) => {
-    event.preventDefault();
-    setEditorVisibility(!editorVisible);
+  const toggleEditor = (visible?: boolean | undefined) => {
+    setEditorVisibility(visible || !editorVisible);
   };
 
   const toggleOptions = (event: any) => {
@@ -68,7 +72,7 @@ function Cell({ value = '', comments = [] }: Props) {
     };
     switch (menuItem.action) {
       case 'edit':
-        setEditorVisibility(true);
+        toggleEditor(true);
         break;
       case 'addcomment':
         setCommentsVisibility(true);
@@ -104,7 +108,7 @@ function Cell({ value = '', comments = [] }: Props) {
               className={`m-2 cursor-pointer transition ease-in-out ${
                 editorVisible ? 'rotate-90' : ''
               }`}
-              onClick={toggleEditor}
+              onClick={() => toggleEditor()}
             >
               <BsChevronRight />
             </button>
@@ -130,11 +134,7 @@ function Cell({ value = '', comments = [] }: Props) {
                 editorVisible ? 'block' : 'hidden'
               }`}
             >
-              <textarea
-                className="w-full p-3 bg-sky-100 min-h-fit outline-none -mb-[6px]"
-                value={cellValue}
-                onChange={handleChange}
-              />
+              <CellEditor />
             </div>
             <div className={`pt-3 ${commentsVisible ? 'flex flex-col' : 'hidden'}`}>
               {cellComments.map((comment) => (
