@@ -28,11 +28,7 @@ function ListElement({ attributes, children }: RenderElementProps) {
 }
 
 function BlockQuoteElement({ attributes, children }: RenderElementProps) {
-  return (
-    <blockquote {...attributes} className="border-l-4 border-white-600/30 pl-4 ml-2">
-      {children}
-    </blockquote>
-  );
+  return <blockquote {...attributes}>{children}</blockquote>;
 }
 
 function DefaultElement({ attributes, children }: RenderElementProps) {

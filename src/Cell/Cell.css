@@ -29,3 +29,7 @@ ul {
 ol {
   @apply list-decimal ml-4;
 }
+
+blockquote {
+  @apply border-l-4 border-gray-900/30 pl-4 ml-2;
+}
