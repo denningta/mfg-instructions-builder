@@ -2,8 +2,7 @@
 /* eslint-disable react/require-default-props */
 import './Cell.css';
 import { useEffect, useState } from 'react';
-import ReactMarkdown from 'react-markdown';
-import { BsThreeDotsVertical, BsChevronRight } from 'react-icons/bs';
+import { BsThreeDotsVertical } from 'react-icons/bs';
 import { BiCommentDetail } from 'react-icons/bi';
 
 // Components
@@ -25,8 +24,7 @@ interface Props {
 }
 
 function Cell({ value = '', comments = [] }: Props) {
-  const [cellValue] = useState<string>(value || '# Hello World');
-  const [editorVisible, setEditorVisibility] = useState<boolean>(false);
+  const [cellValue] = useState<string>(value || 'Hello world');
   const [barVisible, setBarVisibility] = useState<boolean>(false);
   const [optionsVisible, setOptionsVisibility] = useState<boolean>(false);
   const [commentsVisible, setCommentsVisibility] = useState<boolean>(false);
@@ -37,19 +35,12 @@ function Cell({ value = '', comments = [] }: Props) {
 
   useEffect(() => {
     setCommentNotificationVisibility(!!cellComments.length);
-    if (editorVisible) {
-      setBarVisibility(true);
-    }
-  }, [cellComments, editorVisible]);
+  }, [cellComments]);
 
   const handleHover = (event: any) => {
     event.preventDefault();
-    if (optionsVisible || editorVisible) return;
+    if (optionsVisible) return;
     setBarVisibility(event.type !== 'mouseleave');
-  };
-
-  const toggleEditor = (visible?: boolean | undefined) => {
-    setEditorVisibility(visible || !editorVisible);
   };
 
   const toggleOptions = (event: any) => {
@@ -72,7 +63,6 @@ function Cell({ value = '', comments = [] }: Props) {
     };
     switch (menuItem.action) {
       case 'edit':
-        toggleEditor(true);
         break;
       case 'addcomment':
         setCommentsVisibility(true);
@@ -103,15 +93,6 @@ function Cell({ value = '', comments = [] }: Props) {
               barVisible ? 'opacity-100' : 'opacity-0'
             }`}
           >
-            <button
-              type="button"
-              className={`m-2 cursor-pointer transition ease-in-out ${
-                editorVisible ? 'rotate-90' : ''
-              }`}
-              onClick={() => toggleEditor()}
-            >
-              <BsChevronRight />
-            </button>
             <div className="relative grow h-full flex flex-col items-center bg-slate-200 w-6 p-2 rounded-l transition ease-in-out">
               <button type="button" onClick={toggleOptions}>
                 <BsThreeDotsVertical className="cursor-pointer" />
@@ -126,14 +107,7 @@ function Cell({ value = '', comments = [] }: Props) {
             </div>
           </div>
           <div className="grow">
-            <div className="p-3">
-              <ReactMarkdown>{cellValue}</ReactMarkdown>
-            </div>
-            <div
-              className={`overflow-clip transition ease-in-out ${
-                editorVisible ? 'block' : 'hidden'
-              }`}
-            >
+            <div className="overflow-clip">
               <CellEditor />
             </div>
             <div className={`pt-3 ${commentsVisible ? 'flex flex-col' : 'hidden'}`}>

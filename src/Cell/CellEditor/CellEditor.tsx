@@ -17,9 +17,13 @@ function CellEditor() {
   const editor = useMemo(() => withShortcuts(withReact(createEditor())), []);
   const renderElement = useRenderElements();
 
+  const handleChange = (output: any) => {
+    console.log(output);
+  };
+
   return (
     <div>
-      <Slate editor={editor} value={initialValue}>
+      <Slate editor={editor} value={initialValue} onChange={handleChange}>
         <Editable renderElement={renderElement} spellCheck autoFocus className="p-3 bg-slate-100" />
       </Slate>
     </div>
