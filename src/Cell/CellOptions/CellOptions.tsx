@@ -26,12 +26,12 @@ const defaultMenuItems: MenuItem[] = [
 
 function CellOptions({ menuItems = defaultMenuItems, selectOption }: Props) {
   return (
-    <div className="bg-white p-2 border border-gray-300 w-[150px]">
+    <div className="bg-white p-1 border border-gray-300 w-[150px] rounded">
       {menuItems.map((menuItem) => (
         <div key={menuItem.title}>
           <button
             type="submit"
-            className="cursor-pointer hover:bg-gray-300 px-3 py-1 w-full text-left"
+            className="cursor-pointer hover:bg-sky-200 px-3 py-1 w-full text-left rounded"
             onClick={() => selectOption(menuItem)}
           >
             {menuItem.title}
