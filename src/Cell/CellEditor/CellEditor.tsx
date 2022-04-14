@@ -16,12 +16,12 @@ const initialValue: CustomElement[] = [
 
 function CellEditor() {
   const editor = useMemo(() => withShortcuts(withReact(createEditor())), []);
-  const ref = useRef<HTMLDivElement>(null);
+  const autoCompleteDropdown = useRef<HTMLDivElement>(null);
   const renderElement = useRenderElements();
-
   const [target, setTarget] = useState<Range | null>();
   const [search, setSearch] = useState('');
   const [index, setIndex] = useState(0);
+  const [selectionMade, setSelectionMade] = useState(false);
 
   const handleChange = () => {
     const { selection } = editor;
@@ -31,10 +31,12 @@ function CellEditor() {
       const beforeRange = wordBefore && Editor.range(editor, wordBefore, start);
       const beforeText = beforeRange && Editor.string(editor, beforeRange);
 
-      if (beforeText) {
+      if (beforeText && !selectionMade) {
         setTarget(beforeRange);
         setSearch(beforeText);
         setIndex(0);
+      } else {
+        setTarget(null);
       }
     }
   };
@@ -44,9 +46,18 @@ function CellEditor() {
     10,
   );
 
+  const onSelectAutoComplete = (itemIndex: number) => {
+    if (target) {
+      Transforms.select(editor, target);
+      Transforms.insertText(editor, chars[itemIndex]);
+      setTarget(null);
+    }
+  };
+
   const onKeyDown = useCallback(
     (event) => {
-      if (target) {
+      if (event.key === ' ' || event.key === 'Enter') setSelectionMade(false);
+      if (target && chars.length > 0) {
         const prevIndex = index >= chars.length - 1 ? 0 : index + 1;
         const nextIndex = index <= 0 ? chars.length - 1 : index - 1;
         switch (event.key) {
@@ -63,6 +74,7 @@ function CellEditor() {
             event.preventDefault();
             Transforms.select(editor, target);
             Transforms.insertText(editor, chars[index]);
+            setSelectionMade(true);
             setTarget(null);
             break;
           case 'Escape':
@@ -79,7 +91,7 @@ function CellEditor() {
 
   useEffect(() => {
     if (target && chars.length > 0) {
-      const el = ref.current;
+      const el = autoCompleteDropdown.current;
       if (!el) return;
       const domRange = ReactEditor.toDOMRange(editor, target);
       const rect = domRange.getBoundingClientRect();
@@ -100,18 +112,20 @@ function CellEditor() {
         />
         {target && chars.length > 0 && (
           <div
-            className="absolute p-1 bg-white border border-gray-300 rounded max-h-[300px] overflow-auto"
-            ref={ref}
+            className="absolute p-1 bg-white border border-gray-300 rounded max-h-[300px] w-[300px] overflow-auto"
+            ref={autoCompleteDropdown}
           >
             {chars.map((char, i) => (
-              <div
+              <button
+                type="button"
                 key={char}
                 className={`cursor-pointer hover:bg-sky-200 px-3 py-1 w-full text-left rounded ${
                   i === index ? 'bg-sky-200' : 'bg-transparent'
                 }`}
+                onClick={() => onSelectAutoComplete(i)}
               >
                 {char}
-              </div>
+              </button>
             ))}
           </div>
         )}
