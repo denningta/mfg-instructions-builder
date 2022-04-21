@@ -41,10 +41,7 @@ function CellEditor() {
     }
   };
 
-  const chars = CHARACTERS.filter((c) => c.toLowerCase().startsWith(search.toLowerCase())).slice(
-    0,
-    10,
-  );
+  const chars = CHARACTERS.filter((c) => c.toLowerCase().startsWith(search.toLowerCase()));
 
   const onSelectAutoComplete = (itemIndex: number) => {
     if (target) {
@@ -100,6 +97,15 @@ function CellEditor() {
     }
   }, [chars.length, editor, index, search, target]);
 
+  // editor
+  // initialValue
+  // handleChange
+  // renderElement
+  // onKeyDown
+  // autoCompleteDropdown
+  // chars
+  // index
+
   return (
     <div>
       <Slate editor={editor} value={initialValue} onChange={handleChange}>
@@ -112,7 +118,7 @@ function CellEditor() {
         />
         {target && chars.length > 0 && (
           <div
-            className="absolute p-1 bg-white border border-gray-300 rounded max-h-[300px] w-[300px] overflow-auto"
+            className="absolute p-1 bg-white border border-gray-300 rounded max-h-[300px] w-[300px] overflow-auto z-50"
             ref={autoCompleteDropdown}
           >
             {chars.map((char, i) => (
