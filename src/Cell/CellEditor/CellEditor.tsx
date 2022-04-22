@@ -6,9 +6,9 @@ import { useMemo } from 'react';
 import { createEditor } from 'slate';
 import { Editable, Slate, withReact } from 'slate-react';
 import { CustomElement } from './custom-types.d';
-import useRenderElements from './useRenderElements';
+import useRenderElements from './hooks/useRenderElements';
 import withShortcuts from './withShortcuts';
-import useAutoComplete from './AutoComplete/useAutoComplete';
+import useAutoComplete from './hooks/useAutoComplete';
 import AutoComplete from './AutoComplete/AutoComplete';
 
 const initialValue: CustomElement[] = [

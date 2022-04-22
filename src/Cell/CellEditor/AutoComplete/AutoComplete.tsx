@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { ReactEditor } from 'slate-react';
-import { AutoCompleteState } from './useAutoComplete';
+import { AutoCompleteState } from '../hooks/useAutoComplete';
 
 function AutoComplete({
   editor,
@@ -17,8 +17,8 @@ function AutoComplete({
       if (!el) return;
       const domRange = ReactEditor.toDOMRange(editor, target);
       const rect = domRange.getBoundingClientRect();
-      el.style.top = `${rect.top + window.pageYOffset + 24}px`;
-      el.style.left = `${rect.left + window.pageXOffset}px`;
+      el.style.top = `${rect.bottom + window.scrollY + 5}px`;
+      el.style.left = `${rect.right + window.scrollX}px`;
     }
   }, [items.length, editor, index, search, target]);
 
