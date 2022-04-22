@@ -52,6 +52,8 @@
          ],
          "operator-linebreak": "off",
          "object-curly-newline": "off",
-         "implicit-arrow-linebreak": "off"
+         "implicit-arrow-linebreak": "off",
+         "comma-dangle": "off",
+         "function-paren-newline": "off"
      }
 }
