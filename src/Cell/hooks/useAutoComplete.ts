@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Editor, Range, Transforms } from 'slate';
 import { ReactEditor } from 'slate-react';
-import LOOKUP_DATA from '../temp-lookup-data';
+import LOOKUP_DATA from '../CellEditor/temp-lookup-data';
 
 export interface AutoCompleteItem {
   id: string;
@@ -22,6 +22,8 @@ export interface AutoCompleteState {
   onKeyDown(event: any): void;
   handleChange(): void;
 }
+
+const insertItem = (editor: Editor, item: AutoCompleteItem) => {};
 
 const useAutoCompleteState = (editor: Editor): AutoCompleteState => {
   const [target, setTarget] = useState<Range | null>();
@@ -58,8 +60,7 @@ const useAutoCompleteState = (editor: Editor): AutoCompleteState => {
         case 'Tab':
         case 'Enter':
           event.preventDefault();
-          Transforms.select(editor, target);
-          Transforms.insertText(editor, items[index].id);
+          onSelectAutoComplete(index);
           setSelectionMade(true);
           setTarget(null);
           break;

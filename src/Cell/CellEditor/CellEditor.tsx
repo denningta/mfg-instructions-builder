@@ -6,9 +6,9 @@ import { useMemo } from 'react';
 import { createEditor } from 'slate';
 import { Editable, Slate, withReact } from 'slate-react';
 import { CustomElement } from './custom-types.d';
-import useRenderElements from './hooks/useRenderElements';
+import useRenderElements from '../hooks/useRenderElements';
 import withShortcuts from './withShortcuts';
-import useAutoComplete from './hooks/useAutoComplete';
+import useAutoComplete from '../hooks/useAutoComplete';
 import AutoComplete from './AutoComplete/AutoComplete';
 
 const initialValue: CustomElement[] = [
@@ -24,18 +24,16 @@ function CellEditor() {
   const autoComplete = useAutoComplete(editor);
 
   return (
-    <div>
-      <Slate editor={editor} value={initialValue} onChange={autoComplete.handleChange}>
-        <Editable
-          renderElement={renderElement}
-          onKeyDown={autoComplete.onKeyDown}
-          spellCheck
-          autoFocus
-          className="p-3 bg-slate-100"
-        />
-        <AutoComplete {...autoComplete} />
-      </Slate>
-    </div>
+    <Slate editor={editor} value={initialValue} onChange={autoComplete.handleChange}>
+      <Editable
+        renderElement={renderElement}
+        onKeyDown={autoComplete.onKeyDown}
+        spellCheck
+        autoFocus
+        className="p-3 bg-slate-100"
+      />
+      <AutoComplete {...autoComplete} />
+    </Slate>
   );
 }
 export default CellEditor;

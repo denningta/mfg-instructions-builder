@@ -29,7 +29,7 @@ function Cell({ value = '', comments = [] }: Props) {
   const [optionsVisible, setOptionsVisibility] = useState<boolean>(false);
   const [commentsVisible, setCommentsVisibility] = useState<boolean>(false);
   const [commentNotificationVisible, setCommentNotificationVisibility] = useState<boolean>(
-    !!comments.length,
+    !!comments.length
   );
   const [cellComments, setCellCommentsState] = useState<CellComment[]>(comments);
 
@@ -59,7 +59,7 @@ function Cell({ value = '', comments = [] }: Props) {
       author: 'Anonymous',
       message: 'test message',
       createdAt: new Date(),
-      resolved: false,
+      resolved: false
     };
     switch (menuItem.action) {
       case 'edit':

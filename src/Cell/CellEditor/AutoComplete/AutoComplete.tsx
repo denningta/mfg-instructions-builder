@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { ReactEditor } from 'slate-react';
-import { AutoCompleteState } from '../hooks/useAutoComplete';
+import { AutoCompleteState } from '../../hooks/useAutoComplete';
 
 function AutoComplete({
   editor,
