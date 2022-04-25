@@ -11,20 +11,24 @@ import withShortcuts from './withShortcuts';
 import useAutoComplete from '../hooks/useAutoComplete';
 import AutoComplete from './AutoComplete/AutoComplete';
 
-const initialValue: CustomElement[] = [
+const defaultValue: CustomElement[] = [
   {
     type: 'paragraph',
-    children: [{ text: 'Hello World' }],
+    children: [{ text: '' }],
   },
 ];
 
-function CellEditor() {
+interface Props {
+  blockContent: CustomElement[] | undefined;
+}
+
+function CellEditor({ blockContent = defaultValue }: Props) {
   const editor = useMemo(() => withShortcuts(withReact(createEditor())), []);
   const renderElement = useRenderElements();
   const autoComplete = useAutoComplete(editor);
 
   return (
-    <Slate editor={editor} value={initialValue} onChange={autoComplete.handleChange}>
+    <Slate editor={editor} value={blockContent} onChange={autoComplete.handleChange}>
       <Editable
         renderElement={renderElement}
         onKeyDown={autoComplete.onKeyDown}
@@ -32,7 +36,9 @@ function CellEditor() {
         autoFocus
         className="p-3 bg-slate-100"
       />
-      <AutoComplete {...autoComplete} />
+      <div className="static">
+        <AutoComplete {...autoComplete} />
+      </div>
     </Slate>
   );
 }

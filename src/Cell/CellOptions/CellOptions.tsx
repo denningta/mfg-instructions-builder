@@ -12,16 +12,16 @@ interface Props {
 const defaultMenuItems: MenuItem[] = [
   {
     title: 'Edit',
-    action: 'edit',
+    action: 'edit'
   },
   {
     title: 'Pin',
-    action: 'pin',
+    action: 'pin'
   },
   {
     title: 'Add comment',
-    action: 'addcomment',
-  },
+    action: 'addcomment'
+  }
 ];
 
 function CellOptions({ menuItems = defaultMenuItems, selectOption }: Props) {

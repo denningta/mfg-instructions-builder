@@ -12,7 +12,7 @@ const SHORTCUTS: any = {
   '###': 'heading-three',
   '####': 'heading-four',
   '#####': 'heading-five',
-  '######': 'heading-six',
+  '######': 'heading-six'
 };
 
 const withShortcuts = (editor: Editor) => {
@@ -24,7 +24,7 @@ const withShortcuts = (editor: Editor) => {
     if (text === ' ' && selection && Range.isCollapsed(selection)) {
       const { anchor } = selection;
       const block = Editor.above(editor, {
-        match: (n) => Editor.isBlock(editor, n),
+        match: (n) => Editor.isBlock(editor, n)
       });
       const path = block ? block[1] : [];
       const start = Editor.start(editor, path);
@@ -36,20 +36,19 @@ const withShortcuts = (editor: Editor) => {
         Transforms.select(editor, range);
         Transforms.delete(editor);
         const newProperties: Partial<SlateElement> = {
-          type,
+          type
         };
         Transforms.setNodes<SlateElement>(editor, newProperties, {
-          match: (n) => Editor.isBlock(editor, n),
+          match: (n) => Editor.isBlock(editor, n)
         });
 
         if (type === 'list-item') {
           const list: BulletedListElement = {
             type: 'bulleted-list',
-            children: [],
+            children: []
           };
           Transforms.wrapNodes(editor, list, {
-            match: (n) =>
-              !Editor.isEditor(n) && SlateElement.isElement(n) && n.type === 'list-item',
+            match: (n) => !Editor.isEditor(n) && SlateElement.isElement(n) && n.type === 'list-item'
           });
         }
 
@@ -65,7 +64,7 @@ const withShortcuts = (editor: Editor) => {
 
     if (selection && Range.isCollapsed(selection)) {
       const match = Editor.above(editor, {
-        match: (n) => Editor.isBlock(editor, n),
+        match: (n) => Editor.isBlock(editor, n)
       });
 
       if (match) {
@@ -79,7 +78,7 @@ const withShortcuts = (editor: Editor) => {
           Point.equals(selection.anchor, start)
         ) {
           const newProperties: Partial<SlateElement> = {
-            type: 'paragraph',
+            type: 'paragraph'
           };
           Transforms.setNodes(editor, newProperties);
 
@@ -87,7 +86,7 @@ const withShortcuts = (editor: Editor) => {
             Transforms.unwrapNodes(editor, {
               match: (n) =>
                 !Editor.isEditor(n) && SlateElement.isElement(n) && n.type === 'bulleted-list',
-              split: true,
+              split: true
             });
           }
 

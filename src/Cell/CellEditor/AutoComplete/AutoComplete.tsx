@@ -16,19 +16,19 @@ function AutoComplete({
       const el = autoCompleteDropdown.current;
       if (!el) return;
       const domRange = ReactEditor.toDOMRange(editor, target);
+
       const rect = domRange.getBoundingClientRect();
       el.style.top = `${rect.bottom + window.scrollY + 5}px`;
       el.style.left = `${rect.right + window.scrollX}px`;
+      console.log('domRange: ', `(${rect.bottom}, ${rect.right})`);
+      console.log('el: ', `(${el.style.top}, ${el.style.left})`);
     }
   }, [items.length, editor, index, search, target]);
 
   return (
-    <div>
+    <div className="absolute z-20" ref={autoCompleteDropdown}>
       {target && items.length > 0 && (
-        <div
-          className="absolute p-1 bg-white border border-gray-300 rounded max-h-[300px] w-[300px] overflow-auto z-50"
-          ref={autoCompleteDropdown}
-        >
+        <div className="p-1 bg-white border border-gray-300 rounded max-h-[300px] w-[300px] overflow-auto z-50">
           {items.map((item, i) => (
             <button
               type="button"

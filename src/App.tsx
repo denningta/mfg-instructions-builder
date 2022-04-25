@@ -1,10 +1,10 @@
 import './App.css';
-import Cell from './Cell/Cell';
+import Document from './Document/Document';
 
 function App() {
   return (
-    <div className="p-10">
-      <Cell />
+    <div className="my-10 mr-10 ml-[90px]">
+      <Document />
     </div>
   );
 }
