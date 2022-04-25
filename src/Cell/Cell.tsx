@@ -1,16 +1,22 @@
+/* eslint-disable react/jsx-props-no-spreading */
 /* eslint-disable operator-linebreak */
 /* eslint-disable react/require-default-props */
 import './Cell.css';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { BsThreeDotsVertical } from 'react-icons/bs';
 import { BiCommentDetail } from 'react-icons/bi';
 import { IoAdd } from 'react-icons/io5';
 
 // Components
+import { Editable, Slate, withReact } from 'slate-react';
+import { createEditor } from 'slate';
 import CellOptions, { MenuItem } from './CellOptions/CellOptions';
 import CommentComponent from './Comment/Comment';
-import CellEditor from './CellEditor/CellEditor';
 import { CustomElement } from './CellEditor/custom-types.d';
+import AutoComplete from './CellEditor/AutoComplete/AutoComplete';
+import withShortcuts from './CellEditor/withShortcuts';
+import useRenderElements from './hooks/useRenderElements';
+import useAutoComplete from './hooks/useAutoComplete';
 
 export interface CellComment {
   id: string;
@@ -30,6 +36,13 @@ interface Props {
   comments?: CellComment[];
 }
 
+const defaultValue: CustomElement[] = [
+  {
+    type: 'paragraph',
+    children: [{ text: '' }]
+  }
+];
+
 function Cell({ cellValue, comments = [] }: Props) {
   const [value] = useState<CellValue | undefined>(cellValue);
   const [barVisible, setBarVisibility] = useState<boolean>(false);
@@ -40,6 +53,9 @@ function Cell({ cellValue, comments = [] }: Props) {
   );
   const [cellComments, setCellCommentsState] = useState<CellComment[]>(comments);
   const editorRef = useRef<HTMLDivElement | null>(null);
+  const editor = useMemo(() => withShortcuts(withReact(createEditor())), []);
+  const renderElement = useRenderElements();
+  const autoComplete = useAutoComplete(editor);
 
   useEffect(() => {
     setCommentNotificationVisibility(!!cellComments.length);
@@ -83,75 +99,91 @@ function Cell({ cellValue, comments = [] }: Props) {
   };
 
   return (
-    <div className="relative" onMouseEnter={handleHover} onMouseLeave={handleHover}>
-      <div
-        className={`${
-          barVisible ? 'opacity-40' : 'opacity-0'
-        } absolute flex justify-center transition ease-in-out -top-[7.5px] w-full z-10 ml-2 `}
-      >
-        <button
-          type="submit"
-          className="bg-slate-800 text-white rounded-full h-[15px] w-[15px] flex justify-center items-center"
-        >
-          <IoAdd />
-        </button>
-      </div>
-      <div
-        className={`${
-          barVisible ? 'opacity-40' : 'opacity-0'
-        } absolute flex justify-center transition ease-in-out -bottom-[7.5px] w-full z-10 ml-2 `}
-      >
-        <button
-          type="submit"
-          className="bg-slate-800 text-white rounded-full h-[15px] w-[15px] flex justify-center items-center"
-        >
-          <IoAdd />
-        </button>
-      </div>
-      <div className="absolute w-[80px] h-full top-0 -left-[80px] flex justify-end">
-        <button
-          type="button"
-          className={`h-fit my-2 mx-2 ${commentNotificationVisible ? 'visible' : 'invisible'}`}
-          onClick={toggleComments}
-        >
-          <div className="flex items-center">
-            <span className="mr-1">{cellComments.length}</span>
-            <BiCommentDetail />
-          </div>
-        </button>
+    <>
+      <div className="relative" onMouseEnter={handleHover} onMouseLeave={handleHover}>
         <div
-          className={`flex items-start transition ease-in-out ${
-            barVisible ? 'opacity-100' : 'opacity-0'
-          }`}
+          className={`${
+            barVisible ? 'opacity-40' : 'opacity-0'
+          } absolute flex justify-center transition ease-in-out -top-[7.5px] w-full z-10 ml-2 `}
         >
-          <div className="relative grow h-full flex flex-col items-center bg-slate-200 w-6 p-2 rounded-l transition ease-in-out">
-            <button type="button" onClick={toggleOptions}>
-              <BsThreeDotsVertical className="cursor-pointer" />
-            </button>
-            <div
-              className={`absolute top-0 left-7 z-50 ${
-                optionsVisible ? 'flex flex-col' : 'hidden'
-              }`}
-            >
-              <CellOptions selectOption={selectOption} />
+          <button
+            type="submit"
+            className="bg-slate-800 text-white rounded-full h-[15px] w-[15px] flex justify-center items-center"
+          >
+            <IoAdd />
+          </button>
+        </div>
+        <div
+          className={`${
+            barVisible ? 'opacity-40' : 'opacity-0'
+          } absolute flex justify-center transition ease-in-out -bottom-[7.5px] w-full z-10 ml-2 `}
+        >
+          <button
+            type="submit"
+            className="bg-slate-800 text-white rounded-full h-[15px] w-[15px] flex justify-center items-center"
+          >
+            <IoAdd />
+          </button>
+        </div>
+        <div className="absolute w-[80px] h-full top-0 -left-[80px] flex justify-end">
+          <button
+            type="button"
+            className={`h-fit my-2 mx-2 ${commentNotificationVisible ? 'visible' : 'invisible'}`}
+            onClick={toggleComments}
+          >
+            <div className="flex items-center">
+              <span className="mr-1">{cellComments.length}</span>
+              <BiCommentDetail />
+            </div>
+          </button>
+          <div
+            className={`flex items-start transition ease-in-out ${
+              barVisible ? 'opacity-100' : 'opacity-0'
+            }`}
+          >
+            <div className="relative grow h-full flex flex-col items-center bg-slate-200 w-6 p-2 rounded-l transition ease-in-out">
+              <button type="button" onClick={toggleOptions}>
+                <BsThreeDotsVertical className="cursor-pointer" />
+              </button>
+              <div
+                className={`absolute top-0 left-7 z-50 ${
+                  optionsVisible ? 'flex flex-col' : 'hidden'
+                }`}
+              >
+                <CellOptions selectOption={selectOption} />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex w-full my-4">
+          <div className="grow">
+            <div className="overflow-clip" ref={editorRef}>
+              {/* <CellEditor blockContent={value?.blockContent} /> */}
+              <Slate
+                editor={editor}
+                value={value?.blockContent || defaultValue}
+                onChange={autoComplete.handleChange}
+              >
+                <Editable
+                  renderElement={renderElement}
+                  onKeyDown={autoComplete.onKeyDown}
+                  spellCheck
+                  autoFocus
+                  className="p-3 bg-slate-100"
+                />
+              </Slate>
+            </div>
+            <div className={`pt-3 ${commentsVisible ? 'flex flex-col' : 'hidden'}`}>
+              {cellComments.map((comment) => (
+                <CommentComponent key={comment.id} comment={comment} />
+              ))}
             </div>
           </div>
         </div>
       </div>
-
-      <div className="flex w-full my-4">
-        <div className="grow">
-          <div className="overflow-clip" ref={editorRef}>
-            <CellEditor blockContent={value?.blockContent} />
-          </div>
-          <div className={`pt-3 ${commentsVisible ? 'flex flex-col' : 'hidden'}`}>
-            {cellComments.map((comment) => (
-              <CommentComponent key={comment.id} comment={comment} />
-            ))}
-          </div>
-        </div>
-      </div>
-    </div>
+      <AutoComplete {...autoComplete} />
+    </>
   );
 }
 
